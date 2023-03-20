@@ -6,102 +6,28 @@ import seaborn as sns
 from datetime import datetime
 from pandas.io.json import json_normalize
 
-# EXTRACCION DE VENTAS
-#____________________________________________________________________________________________
-url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
-params = {
-    'consumer_key': 'ck_e88ed88e0a1684cd729a37dee41c2a3cb503b0ec',      # CK
-    'consumer_secret': 'cs_0cc67c5057e588a91ba99b38271729baeb83dc56',   # CS
-    'per_page': 100,                                                    # número de pedidos por página
-    'meta_data': ['_yith_pos_cashier', '[P] _alg_wc_cog_cost']     # Metadata
-}
-orders = []                                                             # lista para almacenar los pedidos
-#response = requests.get(url, params=params)                             # Consulta para extraer el número de páginas
-#npages=round(int(response.headers['X-WP-Total'])/100)+1                 # Conseguimos el número de Páginas
+ventas_mkp = pd.read_csv('ventas_mkp.csv')
+productos = pd.read_csv('productos.csv')
 
-for page in range(1, 2):                                           # Ciclo For para extraer la data
-    params['page'] = page
-    response = requests.get(url, params=params)
-    orders += response.json()
-
-df_agrupada = pd.DataFrame(orders)                                               # Convertimos en DataFrame
-
-df_expanded = df_agrupada.explode('line_items')
-df_expanded = pd.concat([df_expanded.drop(['line_items'], axis=1), df_expanded['line_items'].apply(pd.Series)], axis=1)
-
-# Expande los datos de la columna 'yith_pos_data' utilizando json_normalize
-df_normalized = json_normalize(df_expanded['yith_pos_data'])
-# Concatenar
-df_expanded1=df_expanded.copy()
-df_normalized1=df_normalized.copy()
-df_expanded1 = df_expanded1.reset_index()
-df_normalized1 = df_normalized1.reset_index()
-df_combined = pd.concat([df_expanded1, df_normalized1], axis=1)
-
-# Selección de Columnas útiles
-ventas = df_combined.loc[:, ['id', 'status', 'date_created','payment_method_title',
-                            'name', 'product_id', 'variation_id', 'quantity',
-                            'subtotal', 'subtotal_tax', 'price', 'register_name']]
-# Elimina columna redundante en el nombre
-ventas.columns.values[0] = 'id_order'
-ventas = ventas.drop(ventas.columns[1], axis=1)
-
-# Cambio de tipo de datos en las columnas
-ventas['date_created'] = pd.to_datetime(ventas['date_created'])
-# Formatear la columna date_created en YYYY-MM-DD
-ventas['date_created'] = ventas['date_created'].apply(lambda x: datetime.strftime(x, '%Y-%m-%d'))
-ventas['date_created'] = pd.to_datetime(ventas['date_created'])
-
+# CAMBIOS A VENTAS MKP
+# Cambio de variables fecha
+ventas_mkp['date_created'] = pd.to_datetime(ventas_mkp['date_created'])
 # Cambio de variables INT
-ventas['id_order'] = ventas['id_order'].astype(int)
-ventas['product_id'] = ventas['product_id'].astype(int)
-ventas['variation_id'] = ventas['variation_id'].astype(int)
-ventas['quantity'] = ventas['quantity'].astype(int)
+ventas_mkp['id_order'] = ventas_mkp['id_order'].astype(int)
+ventas_mkp['product_id'] = ventas_mkp['product_id'].astype(int)
+ventas_mkp['variation_id'] = ventas_mkp['variation_id'].astype(int)
+ventas_mkp['quantity'] = ventas_mkp['quantity'].astype(int)
 # Cambio de variables FLOAT
-ventas['subtotal'] = ventas['subtotal'].astype(float)
-ventas['subtotal_tax'] = ventas['subtotal_tax'].astype(float)
-ventas['price'] = ventas['price'].astype(float)
+ventas_mkp['subtotal'] = ventas_mkp['subtotal'].astype(float)
+ventas_mkp['subtotal_tax'] = ventas_mkp['subtotal_tax'].astype(float)
+ventas_mkp['price'] = ventas_mkp['price'].astype(float)
 # Cambio de variables STRING
-ventas['status'] = ventas['status'].astype(str)
-ventas['status'] = ventas['status'].astype(str)
-ventas['name'] = ventas['name'].astype(str)
-ventas['register_name'] = ventas['register_name'].astype(str)
+ventas_mkp['status'] = ventas_mkp['status'].astype(str)
+ventas_mkp['status'] = ventas_mkp['status'].astype(str)
+ventas_mkp['name'] = ventas_mkp['name'].astype(str)
+ventas_mkp['register_name'] = ventas_mkp['register_name'].astype(str)
 
-# Levantamiento de ventas
-ventas_mkp = ventas[ventas['register_name'].str.contains('Caja 2')]
-
-# EXTRACCION DE PRODUCTOS
-#____________________________________________________________________________________________
-# Importación de Productos
-url = 'https://www.sharwinn.com/wp-json/wc/v3/products'                 # url
-params = {
-    'consumer_key': 'ck_e88ed88e0a1684cd729a37dee41c2a3cb503b0ec',      # CK
-    'consumer_secret': 'cs_0cc67c5057e588a91ba99b38271729baeb83dc56',   # CS
-    'per_page': 100,                                                    # número de pedidos por página
-}
-products = []                                                             # lista para almacenar los pedidos
-response = requests.get(url, params=params)                             # Consulta para extraer el número de páginas
-npages=round(int(response.headers['X-WP-Total'])/100)+2                 # Conseguimos el número de Páginas
-
-for page in range(1, npages):                                           # Ciclo For para extraer la data
-    params['page'] = page
-    response = requests.get(url, params=params)
-    products += response.json()
-
-p_agrupada = pd.DataFrame(products)                                     # Convertimos en DataFrame
-
-products=p_agrupada.copy()
-
-# Selección de productos a Trabajar para Productos
-products.rename(columns={'id': 'product_id'}, inplace=True)
-productos = products.loc[:, ['product_id', 'name', 'date_created', 'type',
-                            'status', 'sku', 'price', 'regular_price','total_sales',
-                            'stock_quantity','categories']]
-
-# Convertir la columna date_created en un objeto datetime
-productos['date_created'] = pd.to_datetime(productos['date_created'])
-# Formatear la columna date_created en YYYY-MM-DD
-productos['date_created'] = productos['date_created'].apply(lambda x: datetime.strftime(x, '%Y-%m-%d'))
+# CAMBIOS A PRODUCTOS
 # Convertir la columna date_created en un objeto datetime
 productos['date_created'] = pd.to_datetime(productos['date_created'])
 
@@ -119,6 +45,7 @@ productos['name'] = productos['name'].fillna('').astype(str)
 productos['type'] = productos['type'].fillna('').astype(str)
 productos['status'] = productos['status'].fillna('').astype(str)
 productos['sku'] = productos['sku'].fillna('').astype(str)
+
 #____________________________________________________________________________________________
 # PRIMERA VENTA
 ########################################
@@ -141,40 +68,71 @@ df_sin_duplicados = primer_venta_fechas_nombre.drop_duplicates(subset=['product_
 primer_venta_completo=pd.merge(primer_venta_fechas_sorted, df_sin_duplicados, on='product_id')
 
 # Generación de DataFrame "Lista Completa" Por Días
-diferencia_en_dias_rango=3
 rotacion_primera_venta = primer_venta_completo.loc[:, ['product_id', 'name', 'Fecha_Creacion_producto', 'diferencia_en_dias']]
-rotacion_primera_venta.loc[rotacion_primera_venta['diferencia_en_dias'] <=diferencia_en_dias_rango]
+
+st.title('ROTACIÓN')
+st.markdown('## PRIMERA COMPRA')
+st.subheader('Tiempo en Días transccurridos desde la primera compra')
+
+st.markdown('***')
+diferencia_en_dias_rango=st.slider('Definir el Max de Días',0,100,5)
+if st.checkbox('Montrar Tabla Completa'):
+    st.dataframe(rotacion_primera_venta.loc[rotacion_primera_venta['diferencia_en_dias'] <=diferencia_en_dias_rango])
+st.markdown('***')
 
 ########################################
 # Generación de DataFrame "Lista Completa" Por Fecha
 Fecha_Creacion_producto_rango='2023-03-01'
 rotacion_primera_venta = primer_venta_completo.loc[:, ['product_id', 'name', 'Fecha_Creacion_producto', 'diferencia_en_dias']]
-rotacion_primera_venta.loc[rotacion_primera_venta['Fecha_Creacion_producto'] >=Fecha_Creacion_producto_rango]
+
+
+st.subheader('Tiempo transccurrido (anterior) desde una fecha')
+
+Fecha_Creacion_producto_rango = st.text_input('Ingresa una fecha similar al ejemplo: 2023-03-01')
+if Fecha_Creacion_producto_rango=='':
+    print('')
+else:
+    st.dataframe(rotacion_primera_venta.loc[rotacion_primera_venta['Fecha_Creacion_producto'] >=Fecha_Creacion_producto_rango])
+st.markdown('***')
 
 ########################################
 # Graficar por Precio de venta
-venta_promedio_id = ventas_mkp.groupby('product_id')['subtotal'].mean().reset_index(name='precio_promedio')
+venta_promedio_id = ventas_mkp.groupby('product_id')['price'].mean().reset_index(name='precio_promedio')
 venta_promedio=pd.merge(rotacion_primera_venta, venta_promedio_id, on='product_id')
 venta_promedio_precio = venta_promedio.loc[:, ['product_id', 'diferencia_en_dias','precio_promedio']]
 
-dias_limite_LI=venta_promedio_precio['diferencia_en_dias'].min()
-dias_limite_LS=venta_promedio_precio['diferencia_en_dias'].max()
-dias_limite=100
-fig=plt.figure()
-sns.histplot(data=venta_promedio_precio[venta_promedio_precio['diferencia_en_dias']<dias_limite], x="precio_promedio", color='red', bins=30, kde=True, linewidth=0)
-plt.xlabel('Precio Promedio')
-plt.ylabel('Frecuencia de cantidad de órdenes')
-plt.title('Cantidad de ordenes x Precio')
-########################################
-precio_limite_LI=venta_promedio_precio['precio_promedio'].min()
-precio_limite_LS=venta_promedio_precio['precio_promedio'].max()
-precio_limite=100
-fig=plt.figure()
-sns.histplot(data=venta_promedio_precio[venta_promedio_precio['precio_promedio']<precio_limite], x="diferencia_en_dias", color='red', bins=30, kde=True, linewidth=0)
-plt.xlabel('Diferencia en Día')
-plt.ylabel('Frecuencia de cantidad de órdenes')
-plt.title('Cantidad de ordenes x Días de la Primera')
+st.subheader('Cantidad de ordenes rango de precio')
+st.markdown('***')
+# Crear gráfico de dispersión
+dias_limite = st.number_input('Insert un número de diferencia de días')
+if dias_limite==0.00:
+    st.write('Ingresa un valor distinto de ', dias_limite)
+else:
+    fig=plt.figure()
+    sns.histplot(data=venta_promedio_precio[venta_promedio_precio['diferencia_en_dias']<dias_limite], x="precio_promedio", color='red', bins=30, kde=True, linewidth=0)
+    plt.xlabel('Precio Promedio')
+    plt.ylabel('Frecuencia de cantidad de órdenes')
+    plt.title('Cantidad de ordenes x Precio')
+    st.pyplot(fig)
 
+st.markdown('***')
+########################################
+
+st.subheader('Cantidad de ordenes rango de Días')
+
+precio_limite = st.number_input('Inserta un número de días')
+if precio_limite==0.00:
+    st.write('Ingresa un valor distinto de ', precio_limite)
+else:
+    st.write('El número ingresado es ', precio_limite)
+    fig=plt.figure()
+    sns.histplot(data=venta_promedio_precio[venta_promedio_precio['precio_promedio']<precio_limite], x="diferencia_en_dias", color='red', bins=30, kde=True, linewidth=0)
+    plt.xlabel('Diferencia en Día')
+    plt.ylabel('Frecuencia de cantidad de órdenes')
+    plt.title('Cantidad de ordenes x Días de la Primera')
+    st.pyplot(fig)
+
+st.markdown('***')
 ########################################
 #Generar Dataframe con la información importante
 flujo_semanal=ventas_mkp.copy()
@@ -185,11 +143,20 @@ df_semanal['numero_ano'] = df_semanal['date_created'].dt.year
 
 # PARETO POR CANTIDAD
 # Filtrar por cantidad
-filtro_mes_IS= 3
-filtro_ano_IS=2023
+st.markdown('## HISTOGRAMAS')
+filtro_mes_IS = st.selectbox(
+    'Seleciona el Mes',
+    (1,2,3,4,5,6,7,8,9,10))
+st.write('Selecionaste:', filtro_mes_IS)
+
+filtro_ano_IS = st.selectbox(
+    'Seleciona el Mes',
+    (2020,2021,2022,2023,2024,2025))
+st.write('Selecionaste:', filtro_ano_IS)
+
 
 # Agrupar los datos por día de la semana y sumar las ventas
-df_semanal_mes_filtrado = df_semanal[(df_semanal['numero_mes'] == 3) & (df_semanal['numero_ano'] == 2023)]
+df_semanal_mes_filtrado = df_semanal[(df_semanal['numero_mes'] ==filtro_mes_IS) & (df_semanal['numero_ano'] == filtro_ano_IS)]
 ventas_por_dia = df_semanal_mes_filtrado.groupby('nombre_dia_semana')['quantity'].sum().reset_index(name='cantidad_productos_dia_semana')
 
 # Ordenar los datos por frecuencia
@@ -214,16 +181,25 @@ ax.set_ylabel('Frecuencia de pedidos')
 ax2.set_ylabel('Porcentaje acumulado')
 ax.tick_params(axis='x', rotation=90)
 plt.title('Cantidad pedidos por día de la semana')
-plt.show()
+st.pyplot(fig)
 
+st.markdown('***')
 ########################################
 # PARETO POR MONTOS
-# Filtrar por cantidad
-filtro_mes_IS= 3
-filtro_ano_IS=2023
+# Filtrar por Ventas
+
+filtro_mes_ISV = st.selectbox(
+    'Seleciona el Mes de la venta',
+    (1,2,3,4,5,6,7,8,9,10))
+st.write('Selecionaste el mes de:', filtro_mes_IS)
+
+filtro_ano_ISV = st.selectbox(
+    'Seleciona el Mes de la venta',
+    (2020,2021,2022,2023,2024,2025))
+st.write('Selecionaste el año :', filtro_ano_IS)
 
 # Agrupar los datos por día de la semana y sumar las ventas
-df_semanal_mes_filtrado = df_semanal[(df_semanal['numero_mes'] == 3) & (df_semanal['numero_ano'] == 2023)]
+df_semanal_mes_filtrado = df_semanal[(df_semanal['numero_mes'] == filtro_mes_ISV) & (df_semanal['numero_ano'] == filtro_ano_ISV)]
 ventas_por_dia = df_semanal_mes_filtrado.groupby('nombre_dia_semana')['subtotal'].sum().reset_index(name='venta_dia_semana')
 
 # Ordenar los datos por frecuencia
@@ -248,11 +224,12 @@ ax.set_ylabel('Frecuencia de Montos')
 ax2.set_ylabel('Porcentaje acumulado')
 ax.tick_params(axis='x', rotation=90)
 plt.title('Ventas por día de la semana')
-plt.show()
+st.pyplot(fig)
 
+st.markdown('***')
+st.markdown('## PARETO')
 ########################################
 # PRODUCTOS POPULARES
-filtro_populares_cantidad=5
 # Copiar
 ventas_populares=ventas_mkp.copy()
 productos_populares=productos.copy()
@@ -263,29 +240,8 @@ valores_populares=pd.merge(ventas, nombres, on='product_id')                    
 populares = valores_populares.sort_values(by='cantidad_total', ascending=False)                         # Ordenar
 df_populares = populares.loc[:, ['name','cantidad_total']]                                              # Seleccionamos columnas
 
-df_populares.head(filtro_populares_cantidad)
+filtro_populares_cantidad=st.slider('Cantidad de Productos a mostrar',0,60,10)
+if st.checkbox('Montrar Lista completa'):
+    st.dataframe(df_populares.head(filtro_populares_cantidad))
 
-#____________________________________________________________________________________________
-
-
-st.title('ROTACIÓN')
-
-st.subheader('Tiempo en Días transccurridos desde la primera compra')
-
-st.markdown('***')
-dias_limite=st.slider('Definir el Max de Días',0,100,5)
-if st.checkbox('Montrar Tabla Completa'):
-    st.dataframe(primer_venta_completado.loc[primer_venta_completado['diferencia_en_dias'] <=dias_limite])
-st.markdown('***')
-
-st.subheader('Tiempo hasta la primera compra VS el precio promedio')
-st.markdown('***')
-# Graficar por Precio de venta
-precio_promedio_id= data_mkp.groupby('product_id')['subtotal'].mean().reset_index(name='precio_promedio')
-precio_promedio=pd.merge(primer_venta_completado, precio_promedio_id, on='product_id')
-# Crear gráfico de dispersión
-precio_limite=st.slider('Definir el precio promedio Límite',0,300,10,)
-fig=plt.figure()
-sns.scatterplot(x="diferencia_en_dias", y="precio_promedio", data=precio_promedio[precio_promedio['precio_promedio']<precio_limite])
-st.pyplot(fig)
 st.markdown('***')
