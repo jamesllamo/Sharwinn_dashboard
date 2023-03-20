@@ -1,5 +1,6 @@
 #.\sw_env\Scripts\activate
 #streamlit run .\Sharwinn_intro.py
+#pip freeze > requirements.txt
 
 import streamlit as st
 import pandas as pd
