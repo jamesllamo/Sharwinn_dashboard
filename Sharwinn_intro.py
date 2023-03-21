@@ -7,6 +7,8 @@ import pandas as pd
 import requests
 from datetime import datetime
 from pandas.io.json import json_normalize
+from git import Repo
+from github import Github
 
 
 st.image('https://www.sharwinn.com/wp-content/uploads/2022/05/Logo-Editable-Sharwin-700x300-1.jpg')
@@ -23,6 +25,15 @@ st.write('## Info Complementaria')
 st.markdown('[Ver más de Sharwinn](https://www.sharwinn.com/)')
 
 if st.button('Actualizar Base de datos'):
+
+    # HABILITAR REPO
+    from github import Github
+    # Autenticar con el token de acceso personal
+    g = Github("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")
+    # Obtener la referencia al repositorio
+    repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
+    # Crear un archivo en el repositorio
+    
     # EXTRACCION DE VENTAS
     #____________________________________________________________________________________________
     url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
@@ -34,9 +45,9 @@ if st.button('Actualizar Base de datos'):
     }
     orders = []                                                             # lista para almacenar los pedidos
     response = requests.get(url, params=params)                             # Consulta para extraer el número de páginas
-    npages=round(int(response.headers['X-WP-Total'])/100)+1                 # Conseguimos el número de Páginas
-
-    for page in range(1, npages):                                           # Ciclo For para extraer la data
+    npages_o=round(int(response.headers['X-WP-Total'])/100)+1                 # Conseguimos el número de Páginas
+    npages_oc=response.headers['X-WP-Total']
+    for page in range(1, npages_o):                                           # Ciclo For para extraer la data
         params['page'] = page
         response = requests.get(url, params=params)
         orders += response.json()
@@ -86,7 +97,11 @@ if st.button('Actualizar Base de datos'):
 
     # Levantamiento de ventas
     ventas_mkp = ventas[ventas['register_name'].str.contains('Caja 2')]
-    ventas_mkp.to_csv('ventas_mkp.csv', index=False)
+    # Generamos la cadena de texto
+    ventas_mkp_string = ventas_mkp.to_csv(index=False)
+    # Crear un archivo en el repositorio
+    contents = repo.create_file("Sharwinn_dashboard/ventas_mkp.csv", "ventas_mkp_string", ventas_mkp_string)
+
 
     # EXTRACCION DE PRODUCTOS
     #____________________________________________________________________________________________
@@ -99,9 +114,9 @@ if st.button('Actualizar Base de datos'):
     }
     products = []                                                             # lista para almacenar los pedidos
     response = requests.get(url, params=params)                             # Consulta para extraer el número de páginas
-    npages=round(int(response.headers['X-WP-Total'])/100)+2                 # Conseguimos el número de Páginas
-
-    for page in range(1, npages):                                           # Ciclo For para extraer la data
+    npages_p=round(int(response.headers['X-WP-Total'])/100)+2                 # Conseguimos el número de Páginas
+    npages_pc=response.headers['X-WP-Total']
+    for page in range(1, npages_p):                                           # Ciclo For para extraer la data
         params['page'] = page
         response = requests.get(url, params=params)
         products += response.json()
@@ -138,7 +153,13 @@ if st.button('Actualizar Base de datos'):
     productos['status'] = productos['status'].fillna('').astype(str)
     productos['sku'] = productos['sku'].fillna('').astype(str)
 
-    productos.to_csv('productos.csv', index=False)
+    # Generamos la cadena de texto
+    productos_string = ventas_mkp.to_csv(index=False)
+    # Crear un archivo en el repositorio
+    contents = repo.create_file("Sharwinn_dashboard/productos.csv", "productos_string", productos_string)
+
     st.write('Base de datos Actualizada')
+    st.write('Órdenes: ',npages_oc)
+    st.write('Productos: ', npages_pc)
 else:
     st.write('Este proceso tardará 5 a 10 minutos')
