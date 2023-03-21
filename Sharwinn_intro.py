@@ -11,8 +11,6 @@ import pandas as pd
 import requests
 from datetime import datetime
 from pandas.io.json import json_normalize
-from git import Repo
-from github import Github
 
 
 st.image('https://www.sharwinn.com/wp-content/uploads/2022/05/Logo-Editable-Sharwin-700x300-1.jpg')
@@ -31,6 +29,7 @@ st.markdown('[Ver más de Sharwinn](https://www.sharwinn.com/)')
 if st.button('Actualizar Base de datos'):
 
     # HABILITAR REPO
+    from git import Repo
     from github import Github
     # Autenticar con el token de acceso personal
     g = Github("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")
@@ -103,7 +102,7 @@ if st.button('Actualizar Base de datos'):
     # Generamos la cadena de texto
     ventas_mkp_string = ventas_mkp.to_csv(index=False)
     # Crear un archivo en el repositorio
-    contents = repo.create_file("Sharwinn_dashboard/ventas_mkp.csv", "ventas_mkp_string", ventas_mkp_string)
+    contents = repo.create_file("ventas_mkp.csv", "ventas_mkp_string", ventas_mkp_string)
 
 
     # EXTRACCION DE PRODUCTOS
@@ -159,7 +158,7 @@ if st.button('Actualizar Base de datos'):
     # Generamos la cadena de texto
     productos_string = ventas_mkp.to_csv(index=False)
     # Crear un archivo en el repositorio
-    contents = repo.create_file("Sharwinn_dashboard/productos.csv", "productos_string", productos_string)
+    contents = repo.create_file("productos.csv", "productos_string", productos_string)
 
     st.write('Base de datos Actualizada')
     st.write('Órdenes: ',npages_oc)
