@@ -6,8 +6,8 @@ import seaborn as sns
 from datetime import datetime
 from pandas.io.json import json_normalize
 
-ventas_mkp = pd.read_csv('ventas_mkp.csv')
-productos = pd.read_csv('productos.csv')
+ventas_mkp = pd.read_csv('Sharwinn_dashboard/ventas_mkp.csv')
+productos = pd.read_csv('Sharwinn_dashboard/productos.csv')
 
 # CAMBIOS A VENTAS MKP
 # Cambio de variables fecha
