@@ -1,6 +1,10 @@
 #.\sw_env\Scripts\activate
 #streamlit run .\Sharwinn_intro.py
 #pip freeze > requirements.txt
+# git add .
+# git commit -m "Mensaje de confirmación"
+# git push origin main
+
 
 import streamlit as st
 import pandas as pd
@@ -29,10 +33,9 @@ if st.button('Actualizar Base de datos'):
     # HABILITAR REPO
     from github import Github
     # Autenticar con el token de acceso personal
-    g = Github("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")
+    g = Github("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")
     # Obtener la referencia al repositorio
     repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
-    # Crear un archivo en el repositorio
     
     # EXTRACCION DE VENTAS
     #____________________________________________________________________________________________
