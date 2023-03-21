@@ -32,7 +32,7 @@ if st.button('Actualizar Base de datos'):
     from git import Repo
     from github import Github
     # Autenticar con el token de acceso personal
-    g = Github("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")
+    g = Github("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")
     # Obtener la referencia al repositorio
     repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
     
