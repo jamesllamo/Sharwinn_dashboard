@@ -2,7 +2,7 @@
 #streamlit run .\Sharwinn_intro.py
 #pip freeze > requirements.txt
 # git add .
-# git commit -m "Mensaje de confirmación"
+# git commit -m "MensajE"
 # git push origin main
 
 
@@ -32,7 +32,7 @@ if st.button('Actualizar Base de datos'):
     from git import Repo
     from github import Github
     # Autenticar con el token de acceso personal
-    g = Github("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")
+    g = Github("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")
     # Obtener la referencia al repositorio
     repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
     
