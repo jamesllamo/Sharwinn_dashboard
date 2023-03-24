@@ -33,8 +33,8 @@ if st.button('Actualizar Base de datos'):
     # EXTRACCION DE VENTAS
     #____________________________________________________________________________________________
     # Obtener credenciales desde las variables de entorno
-    consumer_key = os.environ.get('consumer_key')
-    consumer_secret = os.environ.get('consumer_secret')
+    consumer_key = os.environ.get('consumer_key_orders')
+    consumer_secret = os.environ.get('consumer_secret_orders')
     url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
     params = {
         'consumer_key': consumer_key,      # CK
@@ -104,11 +104,14 @@ if st.button('Actualizar Base de datos'):
 
     # EXTRACCION DE PRODUCTOS
     #____________________________________________________________________________________________
+    # Obtener credenciales desde las variables de entorno
+    consumer_key = os.environ.get('consumer_key_products')
+    consumer_secret = os.environ.get('consumer_secret_products')
     # Importación de Productos
     url = 'https://www.sharwinn.com/wp-json/wc/v3/products'                 # url
     params = {
-        'consumer_key': 'ck_e88ed88e0a1684cd729a37dee41c2a3cb503b0ec',      # CK
-        'consumer_secret': 'cs_0cc67c5057e588a91ba99b38271729baeb83dc56',   # CS
+        'consumer_key': consumer_key,      # CK
+        'consumer_secret': consumer_secret,   # CS
         'per_page': 100,                                                    # número de pedidos por página
     }
     products = []                                                             # lista para almacenar los pedidos
