@@ -2,3 +2,15 @@
 
   Local URL: http://localhost:8501
   Network URL: http://192.168.0.4:8501
+
+  #py –m venv nombre-entornov
+#.\nombre-entornov_env\Scripts\activate
+#streamlit run .\xxxxxx.py
+#pip freeze > requirements.txt
+# http://localhost:8501/
+#git config --global user.name "jamesllamo"
+#git config --global user.email "james.llamo@uarm.pe"
+# git add .
+# git commit -m "MensajE"
+# git push --force origin main
+# git push origin main
