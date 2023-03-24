@@ -6,8 +6,8 @@ import seaborn as sns
 from datetime import datetime
 from pandas.io.json import json_normalize
 
-ventas_mkp = pd.read_csv('Sharwinn_dashboard/ventas_mkp.csv')
-productos = pd.read_csv('Sharwinn_dashboard/productos.csv')
+ventas_mkp = pd.read_csv('https://raw.githubusercontent.com/jamesllamo/Sharwinn_dashboard/main/ventas_mkp.csv')
+productos = pd.read_csv('https://raw.githubusercontent.com/jamesllamo/Sharwinn_dashboard/main/productos.csv')
 
 # CAMBIOS A VENTAS MKP
 # Cambio de variables fecha
@@ -33,18 +33,18 @@ productos['date_created'] = pd.to_datetime(productos['date_created'])
 
 # Cambio de variables INT
 productos['product_id'] = productos['product_id'].fillna(0).astype(int)
-productos['stock_quantity'] = productos['stock_quantity'].fillna(0).astype(int)
-productos['total_sales'] = productos['total_sales'].fillna(0).astype(int)
+#productos['stock_quantity'] = productos['stock_quantity'].fillna(0).astype(int)
+#productos['total_sales'] = productos['total_sales'].fillna(0).astype(int)
 
 # Cambio de variables FLOAT
 productos['price'] = productos['price'].replace('', 0.0).fillna(0.0).astype(float)
-productos['regular_price'] = productos['regular_price'].replace('','nan').fillna(productos['price']).astype(float)
+#productos['regular_price'] = productos['regular_price'].replace('','nan').fillna(productos['price']).astype(float)
 
 # Cambio de variables STR
 productos['name'] = productos['name'].fillna('').astype(str)
-productos['type'] = productos['type'].fillna('').astype(str)
+#productos['type'] = productos['type'].fillna('').astype(str)
 productos['status'] = productos['status'].fillna('').astype(str)
-productos['sku'] = productos['sku'].fillna('').astype(str)
+#productos['sku'] = productos['sku'].fillna('').astype(str)
 
 #____________________________________________________________________________________________
 # PRIMERA VENTA
@@ -146,7 +146,7 @@ df_semanal['numero_ano'] = df_semanal['date_created'].dt.year
 st.markdown('## HISTOGRAMAS')
 filtro_mes_IS = st.selectbox(
     'Seleciona el Mes',
-    (1,2,3,4,5,6,7,8,9,10))
+    (1,2,3,4,5,6,7,8,9,10,11,12))
 st.write('Selecionaste:', filtro_mes_IS)
 
 filtro_ano_IS = st.selectbox(
@@ -190,7 +190,7 @@ st.markdown('***')
 
 filtro_mes_ISV = st.selectbox(
     'Seleciona el Mes de la venta',
-    (1,2,3,4,5,6,7,8,9,10))
+    (1,2,3,4,5,6,7,8,9,10,11,12))
 st.write('Selecionaste el mes de:', filtro_mes_IS)
 
 filtro_ano_ISV = st.selectbox(

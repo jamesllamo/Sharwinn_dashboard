@@ -1,9 +1,13 @@
-#.\sw_env\Scripts\activate
-#streamlit run .\Sharwinn_intro.py
+#py –m venv nombre-entornov
+#.\nombre-entornov_env\Scripts\activate
+#streamlit run .\xxxxxx.py
 #pip freeze > requirements.txt
 # http://localhost:8501/
+#git config --global user.name "jamesllamo"
+#git config --global user.email "james.llamo@uarm.pe"
 # git add .
 # git commit -m "MensajE"
+# git push --force origin main
 # git push origin main
 
 
@@ -32,17 +36,22 @@ if st.button('Actualizar Base de datos'):
     # HABILITAR REPO
     from git import Repo
     from github import Github
+    import os
     # Autenticar con el token de acceso personal
-    g = Github("xxx")
+    token = os.environ.get('token')
+    g = Github(token)
     # Obtener la referencia al repositorio
     repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
     
     # EXTRACCION DE VENTAS
     #____________________________________________________________________________________________
+    # Obtener credenciales desde las variables de entorno
+    consumer_key = os.environ.get('consumer_key')
+    consumer_secret = os.environ.get('consumer_secret')
     url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
     params = {
-        'consumer_key': 'ck_e88ed88e0a1684cd729a37dee41c2a3cb503b0ec',      # CK
-        'consumer_secret': 'cs_0cc67c5057e588a91ba99b38271729baeb83dc56',   # CS
+        'consumer_key': consumer_key,      # CK
+        'consumer_secret': consumer_secret,   # CS
         'per_page': 100,                                                    # número de pedidos por página
         'meta_data': ['_yith_pos_cashier', '[P] _alg_wc_cog_cost']     # Metadata
     }
