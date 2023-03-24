@@ -7,21 +7,16 @@ from pandas.io.json import json_normalize
 from git import Repo
 from github import Github
 import os
-# Autenticar con el token de acceso personal
-token = os.environ.get('token')
-g = Github(token)
-# Obtener la referencia al repositorio
-repo = g.get_repo("jamesllamo/Sharwinn_dashboard")
 
 # EXTRACCION DE VENTAS
 #____________________________________________________________________________________________
 # Obtener credenciales desde las variables de entorno
-consumer_key_o = os.environ.get('consumer_key_orders')
-consumer_secret_o = os.environ.get('consumer_secret_orders')
+consumer_key = os.environ.get('consumer_key')
+consumer_secret = os.environ.get('consumer_secret')
 url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
 params = {
-    'consumer_key': consumer_key_o,      # CK
-    'consumer_secret': consumer_secret_o,   # CS
+    'consumer_key': consumer_key,      # CK
+    'consumer_secret': consumer_secret,   # CS
     'per_page': 100,                                                    # número de pedidos por página
     'meta_data': ['_yith_pos_cashier', '[P] _alg_wc_cog_cost']     # Metadata
 }
