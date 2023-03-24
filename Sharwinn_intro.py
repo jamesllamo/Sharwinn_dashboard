@@ -1,16 +1,3 @@
-#py –m venv nombre-entornov
-#.\nombre-entornov_env\Scripts\activate
-#streamlit run .\xxxxxx.py
-#pip freeze > requirements.txt
-# http://localhost:8501/
-#git config --global user.name "jamesllamo"
-#git config --global user.email "james.llamo@uarm.pe"
-# git add .
-# git commit -m "MensajE"
-# git push --force origin main
-# git push origin main
-
-
 import streamlit as st
 import pandas as pd
 import requests
