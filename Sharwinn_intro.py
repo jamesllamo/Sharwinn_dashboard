@@ -33,8 +33,8 @@ if st.button('Actualizar Base de datos'):
     # EXTRACCION DE VENTAS
     #____________________________________________________________________________________________
     # Obtener credenciales desde las variables de entorno
-    consumer_key = os.environ.get('consumer_key_orders')
-    consumer_secret = os.environ.get('consumer_secret_orders')
+    consumer_key = os.environ.get('consumer_key')
+    consumer_secret = os.environ.get('consumer_secret')
     url = 'https://www.sharwinn.com/wp-json/wc/v3/orders'                   # url
     params = {
         'consumer_key': consumer_key,      # CK
@@ -104,9 +104,6 @@ if st.button('Actualizar Base de datos'):
 
     # EXTRACCION DE PRODUCTOS
     #____________________________________________________________________________________________
-    # Obtener credenciales desde las variables de entorno
-    consumer_key = os.environ.get('consumer_key_products')
-    consumer_secret = os.environ.get('consumer_secret_products')
     # Importación de Productos
     url = 'https://www.sharwinn.com/wp-json/wc/v3/products'                 # url
     params = {
